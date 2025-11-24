@@ -10,9 +10,10 @@
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     
     <!-- Babel for JSX -->
+    <!-- Essential for translating JSX directly in the browser -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     
-    <!-- Tailwind CSS -->
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- Google Fonts -->
@@ -37,30 +38,32 @@
     </script>
 
     <style>
+        /* Custom CSS (Minimal) */
         body { background-color: black; color: white; }
-        /* Smooth scrolling */
         html { scroll-behavior: smooth; }
     </style>
 </head>
 <body>
     <div id="root"></div>
 
+    <!-- The application logic (JSX) -->
     <script type="text/babel">
         const { useState } = React;
 
-        // --- ICONS (Inlined to prevent CDN errors) ---
-        // Replaces external lucide-react dependency for stability
-        const IconWrapper = ({ children, ...props }) => (
+        // --- INLINED ICONS (Fixes the dependency error) ---
+        // All icons are defined as simple, self-contained React components using SVG.
+        const IconWrapper = ({ children, size = 24, className = '', ...props }) => (
             <svg 
                 xmlns="http://www.w3.org/2000/svg" 
-                width="24" 
-                height="24" 
+                width={size} 
+                height={size} 
                 viewBox="0 0 24 24" 
                 fill="none" 
                 stroke="currentColor" 
                 strokeWidth="2" 
                 strokeLinecap="round" 
                 strokeLinejoin="round" 
+                className={className}
                 {...props}
             >
                 {children}
@@ -77,7 +80,7 @@
         const X = (props) => <IconWrapper {...props}><path d="M18 6 6 18"/><path d="m6 6 18 12"/></IconWrapper>;
         const Briefcase = (props) => <IconWrapper {...props}><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></IconWrapper>;
         const Cpu = (props) => <IconWrapper {...props}><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M9 2v2"/><path d="M9 20v2"/></IconWrapper>;
-        const Globe = (props) => <IconWrapper {...props}><circle cx="12" cy="12" r="10"/><line x1="2" x2="22" y1="12" y2="12"/><path d="a15.3 15.3 0 0 1 4-10 15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10z"/></IconWrapper>;
+        const Globe = (props) => <IconWrapper {...props}><circle cx="12" cy="12" r="10"/><line x1="2" x2="22" y1="12" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></IconWrapper>;
         const ChevronLeft = (props) => <IconWrapper {...props}><path d="m15 18-6-6 6-6"/></IconWrapper>;
         const Loader2 = (props) => <IconWrapper {...props}><path d="M21 12a9 9 0 1 1-6.219-8.56"/></IconWrapper>;
         const Send = (props) => <IconWrapper {...props}><line x1="22" x2="11" y1="2" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></IconWrapper>;
@@ -147,7 +150,7 @@
         // --- WAITLIST PAGE COMPONENT ---
         const WaitlistPage = ({ onBack }) => {
             const [email, setEmail] = useState('');
-            const [status, setStatus] = useState('idle');
+            const [status, setStatus] = useState('idle'); // idle, loading, success, error
 
             const handleSubmit = async (e) => {
                 e.preventDefault();
@@ -157,11 +160,13 @@
                 formData.append(GOOGLE_FORM_ENTRY_ID, email);
 
                 try {
+                    // Using no-cors mode to submit to Google Forms directly
                     await fetch(GOOGLE_FORM_ACTION_URL, {
                         method: 'POST',
                         mode: 'no-cors',
                         body: formData
                     });
+                    
                     setStatus('success');
                     setEmail('');
                 } catch (error) {
@@ -183,6 +188,7 @@
                         </button>
 
                         <div className="bg-black/60 backdrop-blur-xl border border-white/10 p-8 md:p-12 relative overflow-hidden mt-12 md:mt-0">
+                            {/* Success State */}
                             {status === 'success' ? (
                                 <div className="text-center py-10 animate-in fade-in zoom-in duration-500">
                                     <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6 border border-green-500/50">
@@ -226,7 +232,7 @@
                                             className="w-full bg-white text-black py-4 font-bold font-mono tracking-widest hover:bg-indigo-600 hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                                         >
                                             {status === 'loading' ? (
-                                                <Loader2 className="animate-spin" />
+                                                <Loader2 size={16} className="animate-spin" />
                                             ) : (
                                                 <>
                                                     REQUEST_ACCESS <Send size={16} />
@@ -256,6 +262,7 @@
             const [activeTab, setActiveTab] = useState('client');
             const [currentPage, setCurrentPage] = useState('landing'); 
 
+            // If on waitlist page, render only that
             if (currentPage === 'waitlist') {
                 return <WaitlistPage onBack={() => setCurrentPage('landing')} />;
             }
@@ -263,6 +270,7 @@
             return (
                 <div className="min-h-screen bg-black text-white font-sans selection:bg-indigo-500/30 selection:text-indigo-200">
                     
+                    {/* Fixed Navbar with Blur */}
                     <nav className="fixed w-full z-50 bg-black/80 backdrop-blur-md border-b border-white/5">
                         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                             <div className="flex items-center justify-between h-20">
@@ -314,9 +322,11 @@
                         )}
                     </nav>
 
+                    {/* Hero Section */}
                     <div className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
                         <GridPattern />
                         
+                        {/* Dynamic Glow Behind Title */}
                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-indigo-600/20 rounded-full blur-[100px] z-0 pointer-events-none animate-pulse"></div>
 
                         <div className="relative z-10 max-w-7xl mx-auto px-4 text-center">
@@ -350,6 +360,7 @@
                                 </button>
                             </div>
 
+                            {/* Tech Specs / Trust Badges */}
                             <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-px bg-white/10 border border-white/10 max-w-4xl mx-auto">
                                 {[
                                     { icon: <ShieldCheck size={18} />, text: "AADHAAR VERIFIED" },
@@ -365,10 +376,12 @@
                         </div>
                     </div>
 
+                    {/* Problem Section: The Glitch */}
                     <div className="py-32 bg-black relative border-y border-white/10">
                         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                             <div className="grid md:grid-cols-2 gap-16">
                                 
+                                {/* The Old Way */}
                                 <div className="relative p-1">
                                     <div className="absolute inset-0 bg-red-500/10 blur-xl"></div>
                                     <div className="relative border border-red-900/50 bg-black/50 p-8 backdrop-blur-sm">
@@ -389,6 +402,7 @@
                                     </div>
                                 </div>
 
+                                {/* The Artemis Way */}
                                 <div className="relative p-1">
                                     <div className="absolute inset-0 bg-indigo-500/10 blur-xl"></div>
                                     <div className="relative border border-indigo-500/30 bg-black/50 p-8 backdrop-blur-sm">
@@ -412,6 +426,7 @@
                         </div>
                     </div>
 
+                    {/* Workflow Grid */}
                     <div id="workflow" className="py-32 relative bg-black">
                         <GridPattern />
                         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
@@ -484,6 +499,7 @@
                         </div>
                     </div>
 
+                    {/* Pricing Table */}
                     <div id="pricing" className="py-32 border-t border-white/10 relative overflow-hidden">
                         <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-indigo-900/20 via-black to-black"></div>
                         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -495,6 +511,7 @@
                             </div>
 
                             <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+                                {/* Tier 1 */}
                                 <div className="border border-white/10 bg-black p-10 hover:border-zinc-500 transition-colors">
                                     <div className="flex justify-between items-start mb-8">
                                         <div>
@@ -517,6 +534,7 @@
                                     </button>
                                 </div>
 
+                                {/* Tier 2 */}
                                 <div className="relative border border-indigo-500/50 bg-indigo-950/10 p-10">
                                     <div className="absolute top-0 right-0 bg-indigo-600 text-white text-[10px] font-bold font-mono px-3 py-1 tracking-widest">RECOMMENDED</div>
                                     <div className="flex justify-between items-start mb-8">
@@ -543,6 +561,7 @@
                         </div>
                     </div>
 
+                    {/* Manifesto - The Matrix Rain Effect Concept */}
                     <div id="manifesto" className="py-32 bg-black text-center px-4 relative">
                         <div className="absolute inset-0 opacity-20 bg-[linear-gradient(0deg,transparent_24%,rgba(255,255,255,.05)_25%,rgba(255,255,255,.05)_26%,transparent_27%,transparent_74%,rgba(255,255,255,.05)_75%,rgba(255,255,255,.05)_76%,transparent_77%,transparent),linear-gradient(90deg,transparent_24%,rgba(255,255,255,.05)_25%,rgba(255,255,255,.05)_26%,transparent_27%,transparent_74%,rgba(255,255,255,.05)_75%,rgba(255,255,255,.05)_76%,transparent_77%,transparent)] bg-[size:30px_30px]"></div>
                         <div className="relative z-10 max-w-4xl mx-auto">
@@ -559,6 +578,7 @@
                         </div>
                     </div>
 
+                    {/* Footer */}
                     <footer className="border-t border-white/10 bg-black py-12">
                         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
                             <div className="flex items-center gap-2">
