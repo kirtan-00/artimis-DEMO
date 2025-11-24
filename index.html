@@ -3,181 +3,182 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ARTEMIS OS - Marketplace of the Future</title>
+    <title>ARTEMIS OS | The Marketplace of the Future</title>
+    
     <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
     <!-- Load React and ReactDOM -->
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <!-- Load Babel for JSX compilation (Crucial Fix) -->
+    
+    <!-- Load Babel for JSX compilation -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <style>
-        /* Custom CSS for animations and fonts */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    animation: {
+                        'spin-slow': 'spin 12s linear infinite',
+                        'blob': 'blob 10s infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-glow': 'pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        'pulse-glow': {
+                            '0%, 100%': { opacity: 1 },
+                            '50%': { opacity: .5 },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #000;
+            background-color: #050505; /* Deep Black */
             color: #fff;
             scroll-behavior: smooth;
         }
-
-        .font-mono {
-            font-family: 'Space Mono', monospace;
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #000; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4f46e5; 
         }
 
-        /* Slow Spin for Globe Icon */
-        @keyframes spin-slow {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-        .animate-spin-slow {
-            animation: spin-slow 20s linear infinite;
+        /* Fluid Background Utilities */
+        .glass-card {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
         
-        /* Ensure the root element covers the viewport */
-        #root {
-            min-height: 100vh;
+        .text-glow {
+            text-shadow: 0 0 20px rgba(79, 70, 229, 0.5);
         }
     </style>
 </head>
 <body>
-    <div id="root">
-        <!-- React App will render here -->
-    </div>
+    <div id="root"></div>
 
     <script type="text/babel">
-        // --- INLINED ICONS (Pure JS/JSX components) ---
+        const { useState, useEffect, useRef } = React;
+
+        // --- ICONS ---
         const IconWrapper = ({ children, size = 24, className = '', ...props }) => (
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width={size}
-                height={size}
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className={className}
-                {...props}
-            >
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} {...props}>
                 {children}
             </svg>
         );
 
-        const ShieldCheck = (props) => (
-            <IconWrapper {...props}>
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                <path d="m9 12 2 2 4-4" />
-            </IconWrapper>
-        );
-        const Zap = (props) => (
-            <IconWrapper {...props}>
-                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-            </IconWrapper>
-        );
-        const IndianRupee = (props) => (
-            <IconWrapper {...props}>
-                <path d="M6 3h12" />
-                <path d="M6 8h12" />
-                <path d="m6 13 8.5 10" />
-                <path d="M6 13h3" />
-                <path d="M9 13c6.668 0 6.668-10 0-10" />
-            </IconWrapper>
-        );
-        const Lock = (props) => (
-            <IconWrapper {...props}>
-                <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
-                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-            </IconWrapper>
-        );
-        const Search = (props) => (
-            <IconWrapper {...props}>
-                <circle cx="11" cy="11" r="8" />
-                <path d="m21 21-4.3-4.3" />
-            </IconWrapper>
-        );
-        const CheckCircle = (props) => (
-            <IconWrapper {...props}>
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                <polyline points="22 4 12 14.01 9 11.01" />
-            </IconWrapper>
-        );
-        const Menu = (props) => (
-            <IconWrapper {...props}>
-                <line x1="4" x2="20" y1="12" y2="12" />
-                <line x1="4" x2="20" y1="6" y2="6" />
-                <line x1="4" x2="20" y1="18" y2="18" />
-            </IconWrapper>
-        );
-        const X = (props) => (
-            <IconWrapper {...props}>
-                <path d="M18 6 6 18" />
-                <path d="m6 6 18 12" />
-            </IconWrapper>
-        );
-        const Briefcase = (props) => (
-            <IconWrapper {...props}>
-                <rect width="20" height="14" x="2" y="7" rx="2" ry="2" />
-                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
-            </IconWrapper>
-        );
-        const Cpu = (props) => (
-            <IconWrapper {...props}>
-                <rect x="4" y="4" width="16" height="16" rx="2" />
-                <rect x="9" y="9" width="6" height="6" />
-                <path d="M15 2v2" />
-                <path d="M15 20v2" />
-                <path d="M2 15h2" />
-                <path d="M2 9h2" />
-                <path d="M20 15h2" />
-                <path d="M20 9h2" />
-                <path d="M9 2v2" />
-                <path d="M9 20v2" />
-            </IconWrapper>
-        );
-        const Globe = (props) => (
-            <IconWrapper {...props}>
-                <circle cx="12" cy="12" r="10" />
-                <line x1="2" x2="22" y1="12" y2="12" />
-                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-            </IconWrapper>
-        );
-        const ChevronLeft = (props) => (
-            <IconWrapper {...props}>
-                <path d="m15 18-6-6 6-6" />
-            </IconWrapper>
-        );
-        const Loader2 = (props) => (
-            <IconWrapper {...props}>
-                <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-            </IconWrapper>
-        );
-        const Send = (props) => (
-            <IconWrapper {...props}>
-                <line x1="22" x2="11" y1="2" y2="13" />
-                <polygon points="22 2 15 22 11 13 2 9 22 2" />
-            </IconWrapper>
-        );
+        const ShieldCheck = (props) => <IconWrapper {...props}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /><path d="m9 12 2 2 4-4" /></IconWrapper>;
+        const Zap = (props) => <IconWrapper {...props}><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" /></IconWrapper>;
+        const IndianRupee = (props) => <IconWrapper {...props}><path d="M6 3h12" /><path d="M6 8h12" /><path d="m6 13 8.5 10" /><path d="M6 13h3" /><path d="M9 13c6.668 0 6.668-10 0-10" /></IconWrapper>;
+        const Lock = (props) => <IconWrapper {...props}><rect width="18" height="11" x="3" y="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></IconWrapper>;
+        const Search = (props) => <IconWrapper {...props}><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></IconWrapper>;
+        const CheckCircle = (props) => <IconWrapper {...props}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></IconWrapper>;
+        const Menu = (props) => <IconWrapper {...props}><line x1="4" x2="20" y1="12" y2="12" /><line x1="4" x2="20" y1="6" y2="6" /><line x1="4" x2="20" y1="18" y2="18" /></IconWrapper>;
+        const X = (props) => <IconWrapper {...props}><path d="M18 6 6 18" /><path d="m6 6 18 12" /></IconWrapper>;
+        const Briefcase = (props) => <IconWrapper {...props}><rect width="20" height="14" x="2" y="7" rx="2" ry="2" /><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" /></IconWrapper>;
+        const Cpu = (props) => <IconWrapper {...props}><rect x="4" y="4" width="16" height="16" rx="2" /><rect x="9" y="9" width="6" height="6" /><path d="M15 2v2" /><path d="M15 20v2" /><path d="M2 15h2" /><path d="M2 9h2" /><path d="M20 15h2" /><path d="M20 9h2" /><path d="M9 2v2" /><path d="M9 20v2" /></IconWrapper>;
+        const Globe = (props) => <IconWrapper {...props}><circle cx="12" cy="12" r="10" /><line x1="2" x2="22" y1="12" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /></IconWrapper>;
+        const ChevronLeft = (props) => <IconWrapper {...props}><path d="m15 18-6-6 6-6" /></IconWrapper>;
+        const Loader2 = (props) => <IconWrapper {...props}><path d="M21 12a9 9 0 1 1-6.219-8.56" /></IconWrapper>;
+        const Send = (props) => <IconWrapper {...props}><line x1="22" x2="11" y1="2" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" /></IconWrapper>;
 
         // --- CONFIGURATION ---
-        // NOTE: Replace these with your actual Google Form details 
         const GOOGLE_FORM_ACTION_URL = "https://docs.google.com/forms/d/e/YOUR_FORM_ID_HERE/formResponse"; 
         const GOOGLE_FORM_ENTRY_ID = "entry.123456789"; 
-        const apiKey = ""; 
-        // ---------------------
+        
+        // --- ANIMATED COMPONENTS ---
 
-        // Custom Moon Logo
+        // 1. Fluid Background Engine
+        const FluidBackground = () => (
+            <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+                {/* Dark Base */}
+                <div className="absolute inset-0 bg-[#050505]"></div>
+                
+                {/* Moving Blobs */}
+                <div className="absolute top-0 -left-4 w-96 h-96 bg-indigo-600 rounded-full mix-blend-screen filter blur-[128px] opacity-20 animate-blob"></div>
+                <div className="absolute top-0 -right-4 w-96 h-96 bg-purple-600 rounded-full mix-blend-screen filter blur-[128px] opacity-20 animate-blob" style={{ animationDelay: '2s' }}></div>
+                <div className="absolute -bottom-32 left-20 w-96 h-96 bg-blue-600 rounded-full mix-blend-screen filter blur-[128px] opacity-20 animate-blob" style={{ animationDelay: '4s' }}></div>
+                
+                {/* Grid Overlay */}
+                <div className="absolute inset-0" style={{ 
+                    backgroundImage: 'radial-gradient(rgba(79, 70, 229, 0.2) 1px, transparent 1px)', 
+                    backgroundSize: '50px 50px',
+                    opacity: 0.3
+                }}></div>
+                
+                {/* Vignette */}
+                <div className="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black"></div>
+            </div>
+        );
+
+        // 2. Scroll Reveal Hook
+        const Reveal = ({ children, delay = 0 }) => {
+            const [isVisible, setIsVisible] = useState(false);
+            const ref = useRef(null);
+
+            useEffect(() => {
+                const observer = new IntersectionObserver(
+                    ([entry]) => {
+                        if (entry.isIntersecting) {
+                            setIsVisible(true);
+                            observer.unobserve(entry.target);
+                        }
+                    },
+                    { threshold: 0.1 }
+                );
+                if (ref.current) observer.observe(ref.current);
+                return () => { if (ref.current) observer.unobserve(ref.current); };
+            }, []);
+
+            return (
+                <div
+                    ref={ref}
+                    className={`transition-all duration-1000 cubic-bezier(0.17, 0.55, 0.55, 1) ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}
+                    style={{ transitionDelay: `${delay}ms` }}
+                >
+                    {children}
+                </div>
+            );
+        };
+
         const ArtemisLogo = () => (
-            <svg
-                width="48"
-                height="48"
-                viewBox="0 0 100 100"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                className="mr-2 shrink-0"
-            >
+            <svg width="48" height="48" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-2 shrink-0 drop-shadow-[0_0_10px_rgba(79,70,229,0.5)]">
                 <defs>
                     <linearGradient id="moonGradient" x1="10%" y1="10%" x2="90%" y2="90%">
                         <stop offset="0%" stopColor="#4f46e5" />
@@ -185,507 +186,347 @@
                         <stop offset="100%" stopColor="#c084fc" />
                     </linearGradient>
                     <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
-                        <feGaussianBlur stdDeviation="2.5" result="coloredBlur" />
+                        <feGaussianBlur stdDeviation="3.5" result="coloredBlur" />
                         <feMerge>
                             <feMergeNode in="coloredBlur" />
                             <feMergeNode in="SourceGraphic" />
                         </feMerge>
                     </filter>
                 </defs>
-                <path
-                    d="M75 50C75 77.614 52.614 100 25 100C20.5 100 16.5 99 13 97C30 92 43 75 43 50C43 25 30 8 13 3C16.5 1 20.5 0 25 0C52.614 0 75 22.386 75 50Z"
-                    fill="url(#moonGradient)"
-                    filter="url(#glow)"
-                    transform="translate(10, 0)"
-                />
-                <circle cx="35" cy="25" r="1.5" fill="white" />
+                <path d="M75 50C75 77.614 52.614 100 25 100C20.5 100 16.5 99 13 97C30 92 43 75 43 50C43 25 30 8 13 3C16.5 1 20.5 0 25 0C52.614 0 75 22.386 75 50Z" fill="url(#moonGradient)" filter="url(#glow)" transform="translate(10, 0)" />
+                <circle cx="35" cy="25" r="1.5" fill="white" className="animate-pulse" />
                 <circle cx="50" cy="45" r="1" fill="white" opacity="0.8" />
                 <circle cx="40" cy="75" r="1.2" fill="white" opacity="0.9" />
             </svg>
         );
 
-        const GridPattern = () => (
-            <div className="absolute inset-0 z-0 pointer-events-none opacity-20">
-                <div
-                    className="absolute inset-0"
-                    style={{
-                        backgroundImage: 'radial-gradient(#4f46e5 1px, transparent 1px)',
-                        backgroundSize: '40px 40px',
-                    }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black" />
-            </div>
-        );
-
         const WorkflowCard = ({ icon, title, desc, step }) => (
-            <div className="group relative p-8 rounded-xl border border-white/10 bg-black/40 backdrop-blur-sm hover:border-indigo-500/50 transition-all duration-500">
-                <div className="absolute top-0 right-0 p-4 opacity-20 text-4xl font-mono font-bold text-white group-hover:text-indigo-500 group-hover:opacity-40 transition-all">
+            <div className="glass-card group relative p-8 rounded-xl overflow-hidden hover:bg-white/5 transition-all duration-500 hover:-translate-y-2">
+                <div className="absolute top-0 right-0 p-4 opacity-10 text-6xl font-mono font-bold text-white group-hover:text-indigo-500 group-hover:opacity-20 transition-all select-none">
                     {step}
                 </div>
-                <div className="mb-6 text-indigo-400 group-hover:scale-110 transition-transform duration-500 origin-left">{icon}</div>
-                <h3 className="text-xl font-mono font-bold text-white mb-3 tracking-tight">{title}</h3>
-                <p className="text-zinc-500 group-hover:text-zinc-300 transition-colors leading-relaxed text-sm">{desc}</p>
-                <div className="absolute bottom-0 left-0 w-0 h-[1px] bg-indigo-500 group-hover:w-full transition-all duration-700" />
+                <div className="relative z-10">
+                    <div className="mb-6 text-indigo-400 group-hover:text-indigo-300 group-hover:scale-110 transition-transform duration-500 origin-left drop-shadow-lg">{icon}</div>
+                    <h3 className="text-xl font-mono font-bold text-white mb-3 tracking-tight group-hover:text-indigo-200 transition-colors">{title}</h3>
+                    <p className="text-zinc-400 group-hover:text-zinc-200 transition-colors leading-relaxed text-sm">{desc}</p>
+                </div>
+                <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-600 to-purple-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-700 origin-left"></div>
             </div>
         );
 
-        // --- WAITLIST PAGE COMPONENT ---
         const WaitlistPage = ({ onBack }) => {
-            const [email, setEmail] = React.useState('');
-            const [status, setStatus] = React.useState('idle'); // idle, loading, success, error
+            const [email, setEmail] = useState('');
+            const [status, setStatus] = useState('idle');
 
             const handleSubmit = async (e) => {
                 e.preventDefault();
                 setStatus('loading');
-
                 const formData = new FormData();
                 formData.append(GOOGLE_FORM_ENTRY_ID, email);
-
                 try {
-                    // Using no-cors mode to submit to Google Forms directly
-                    const response = await fetch(GOOGLE_FORM_ACTION_URL, {
-                        method: 'POST',
-                        mode: 'no-cors',
-                        body: formData,
-                    });
-
-                    // Due to 'no-cors', we cannot inspect the response, but if fetch completes, we assume success for the UI.
+                    await fetch(GOOGLE_FORM_ACTION_URL, { method: 'POST', mode: 'no-cors', body: formData });
                     setStatus('success');
                     setEmail('');
                 } catch (error) {
-                    console.error("Form Submission Error:", error);
                     setStatus('error');
                 }
             };
 
-            const successState = (
-                <div className="text-center py-10 animate-in fade-in zoom-in duration-500">
-                    <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6 border border-green-500/50">
-                        <CheckCircle className="text-green-500" size={32} />
-                    </div>
-                    <h2 className="text-3xl font-bold text-white mb-4">ACCESS GRANTED</h2>
-                    <p className="text-zinc-400 mb-8">You are on the list. We will signal you when the protocol launches.</p>
-                    <button
-                        onClick={onBack}
-                        className="bg-white text-black px-8 py-3 font-bold font-mono hover:bg-indigo-500 hover:text-white transition-all rounded-md"
-                    >
-                        RETURN_TO_BASE
-                    </button>
-                </div>
-            );
-
-            const formState = (
-                <React.Fragment>
-                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500" />
-                    <div className="flex justify-center mb-8">
-                        <ArtemisLogo />
-                    </div>
-                    <h2 className="text-3xl md:text-4xl font-bold text-center mb-2">JOIN THE NETWORK</h2>
-                    <p className="text-center text-zinc-500 font-mono text-xs tracking-widest mb-8">/// EARLY_ACCESS_PROTOCOL</p>
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                        <div>
-                            <label className="block text-xs font-mono text-indigo-400 mb-2 ml-1">ENTER_EMAIL_ID</label>
-                            <input
-                                type="email"
-                                required
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                placeholder="creator@example.com"
-                                className="w-full bg-black border border-white/20 p-4 text-white placeholder-zinc-700 focus:outline-none focus:border-indigo-500 transition-all text-lg rounded-md"
-                            />
-                        </div>
-                        <button
-                            type="submit"
-                            disabled={status === 'loading'}
-                            className="w-full bg-white text-black py-4 font-bold font-mono tracking-widest hover:bg-indigo-600 hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 rounded-md"
-                        >
-                            {status === 'loading' ? (
-                                <Loader2 size={16} className="animate-spin" />
-                            ) : (
-                                <React.Fragment>
-                                    REQUEST_ACCESS <Send size={16} />
-                                </React.Fragment>
-                            )}
-                        </button>
-                    </form>
-                    {status === 'error' && (
-                        <p className="mt-4 text-red-500 text-center text-sm font-mono">/// ERROR: CONNECTION_FAILED. TRY_AGAIN.</p>
-                    )}
-                    <p className="mt-8 text-center text-zinc-600 text-xs">By joining, you agree to receive updates about our launch timeline. No spam.</p>
-                </React.Fragment>
-            );
-
-            return (
-                <div className="min-h-screen bg-black text-white font-sans relative overflow-hidden flex items-center justify-center">
-                    <GridPattern />
-                    <div className="relative z-10 w-full max-w-lg px-4">
-                        <button
-                            onClick={onBack}
-                            className="absolute top-4 left-4 md:-top-16 md:left-4 flex items-center text-zinc-500 hover:text-white transition-colors font-mono text-sm z-50"
-                        >
-                            <ChevronLeft size={16} className="mr-1" /> BACK_TO_HOME
-                        </button>
-                        <div className="bg-black/60 backdrop-blur-xl border border-white/10 p-8 md:p-12 relative overflow-hidden mt-12 md:mt-0 rounded-xl">
-                            {status === 'success' ? successState : formState}
-                        </div>
-                    </div>
-                </div>
-            );
-        };
-
-        // --- MAIN APP COMPONENT ---
-        const App = () => {
-            const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-            const [activeTab, setActiveTab] = React.useState('client');
-            const [currentPage, setCurrentPage] = React.useState('landing');
-
-            const navItems = ['Workflow', 'Manifesto', 'Pricing'];
-
-            const navbar = (
-                <nav className="fixed w-full z-50 bg-black/80 backdrop-blur-md border-b border-white/5">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="flex items-center justify-between h-20">
-                            <a href="#" className="flex items-center gap-2 cursor-pointer" onClick={() => setCurrentPage('landing')}>
-                                <ArtemisLogo />
-                                <span className="text-2xl font-bold tracking-wider text-white font-mono">ARTEMIS</span>
-                            </a>
-                            <div className="hidden md:block">
-                                <div className="ml-10 flex items-baseline space-x-8">
-                                    {navItems.map((item) => (
-                                        <a key={item} href={`#${item.toLowerCase()}`} className="text-sm font-mono text-zinc-400 hover:text-white transition-colors tracking-wide uppercase">
-                                            {item}
-                                        </a>
-                                    ))}
-                                    <button
-                                        onClick={() => setCurrentPage('waitlist')}
-                                        className="bg-white text-black px-6 py-2 text-sm font-bold font-mono tracking-wide hover:bg-indigo-400 hover:text-white transition-all rounded-md"
-                                    >
-                                        JOIN_WAITLIST
-                                    </button>
-                                </div>
+            if (status === 'success') {
+                return (
+                    <div className="min-h-screen relative flex items-center justify-center overflow-hidden">
+                        <FluidBackground />
+                        <div className="glass-card p-12 rounded-2xl max-w-lg w-full text-center relative z-10 animate-float border-indigo-500/30">
+                            <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6 border border-green-500/50 shadow-[0_0_30px_rgba(34,197,94,0.3)]">
+                                <CheckCircle className="text-green-500" size={40} />
                             </div>
-                            <div className="-mr-2 flex md:hidden">
-                                <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="p-2 text-zinc-400 hover:text-white rounded-md">
-                                    {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-                                </button>
-                            </div>
+                            <h2 className="text-3xl font-bold text-white mb-4 tracking-tight">ACCESS GRANTED</h2>
+                            <p className="text-zinc-300 mb-8 font-light">Welcome to the future. We will signal you when the protocol launches.</p>
+                            <button onClick={onBack} className="bg-white text-black px-8 py-3 font-bold font-mono hover:bg-indigo-500 hover:text-white transition-all rounded-lg shadow-lg">RETURN_TO_BASE</button>
                         </div>
                     </div>
-                    {isMenuOpen && (
-                        <div className="md:hidden bg-black border-b border-white/10">
-                            <div className="px-4 pt-4 pb-6 space-y-2">
-                                {navItems.map((item) => (
-                                    <a
-                                        key={item}
-                                        href={`#${item.toLowerCase()}`}
-                                        onClick={() => setIsMenuOpen(false)}
-                                        className="block px-3 py-2 text-base font-mono font-medium text-zinc-300 hover:text-white hover:bg-white/5 rounded-md"
-                                    >
-                                        {item}
-                                    </a>
-                                ))}
-                                <button
-                                    onClick={() => {
-                                        setIsMenuOpen(false);
-                                        setCurrentPage('waitlist');
-                                    }}
-                                    className="w-full text-left px-3 py-2 text-base font-mono font-medium text-indigo-400 hover:bg-white/5 rounded-md"
-                                >
-                                    JOIN_WAITLIST
-                                </button>
-                            </div>
-                        </div>
-                    )}
-                </nav>
-            );
-
-            const heroSection = (
-                <div className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
-                    <GridPattern />
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-indigo-600/20 rounded-full blur-[100px] z-0 pointer-events-none animate-pulse" />
-                    <div className="relative z-10 max-w-7xl mx-auto px-4 text-center">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-indigo-300 text-xs font-mono tracking-widest mb-8">
-                            <span className="relative flex h-2 w-2">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75" />
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500" />
-                            </span>SYSTEM ONLINE
-                        </div>
-                        <h1 className="text-5xl md:text-8xl font-black tracking-tighter mb-8 text-white leading-[0.9]">
-                            MARKETPLACE <br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-b from-indigo-400 to-purple-600">OF THE FUTURE</span>
-                        </h1>
-                        <p className="mt-6 max-w-2xl mx-auto text-lg md:text-xl text-zinc-400 font-light leading-relaxed">
-                            India's first <span className="text-white font-medium">low-fee, zero-logistics</span> creative network. Matching verified talent with escrow-secured projects.
-                        </p>
-                        <div className="mt-12 flex flex-col sm:flex-row justify-center gap-4">
-                            <button className="px-8 py-4 bg-white text-black font-bold font-mono hover:bg-indigo-500 hover:text-white transition-all duration-300 border border-transparent rounded-lg">
-                                FIND_CREATIVE_TALENT
-                            </button>
-                            <button
-                                onClick={() => setCurrentPage('waitlist')}
-                                className="px-8 py-4 bg-black text-white border border-white/20 font-bold font-mono hover:border-white transition-all duration-300 rounded-lg"
-                            >
-                                APPLY_AS_CREATOR
-                            </button>
-                        </div>
-                        <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-px bg-white/10 border border-white/10 max-w-4xl mx-auto rounded-xl overflow-hidden shadow-2xl">
-                            {[
-                                { icon: <ShieldCheck size={18} />, text: "AADHAAR VERIFIED" },
-                                { icon: <Lock size={18} />, text: "ESCROW SECURED" },
-                                { icon: <Zap size={18} />, text: "INSTANT MATCH" },
-                                { icon: <IndianRupee size={18} />, text: "1% FLAT FEE" }
-                            ].map((badge, idx) => (
-                                <div key={idx} className="bg-black p-4 flex items-center justify-center gap-3 text-xs font-mono text-zinc-400 tracking-widest uppercase hover:text-indigo-400 transition-colors">
-                                    {badge.icon} {badge.text}
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            );
-
-            const problemSection = (
-                <div className="py-32 bg-black relative border-y border-white/10">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="grid md:grid-cols-2 gap-16">
-                            <div className="relative p-1">
-                                <div className="absolute inset-0 bg-red-500/10 blur-xl rounded-xl" />
-                                <div className="relative border border-red-900/50 bg-black/50 p-8 backdrop-blur-sm rounded-xl shadow-xl">
-                                    <h3 className="text-red-500 font-mono text-sm tracking-widest mb-4">/// SYSTEM ERROR: CURRENT_STATE</h3>
-                                    <h2 className="text-3xl font-bold text-white mb-6">The WhatsApp Chaos</h2>
-                                    <ul className="space-y-4">
-                                        {["Ghosting after delivery", "Unsecured UPI payments", "Endless revision loops", "No legal contracts"].map((item, i) => (
-                                            <li key={i} className="flex items-center gap-3 text-zinc-500">
-                                                <X size={16} className="text-red-500" /> {item}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            </div>
-                            <div className="relative p-1">
-                                <div className="absolute inset-0 bg-indigo-500/10 blur-xl rounded-xl" />
-                                <div className="relative border border-indigo-500/30 bg-black/50 p-8 backdrop-blur-sm rounded-xl shadow-xl">
-                                    <h3 className="text-indigo-500 font-mono text-sm tracking-widest mb-4">/// SYSTEM PATCH: ARTEMIS_V1</h3>
-                                    <h2 className="text-3xl font-bold text-white mb-6">The Structured Future</h2>
-                                    <ul className="space-y-4">
-                                        {["Milestone-based Escrow", "Verified Identity Badges", "Structured 3-Revision Limit", "In-App Workspace"].map((item, i) => (
-                                            <li key={i} className="flex items-center gap-3 text-white">
-                                                <CheckCircle size={16} className="text-indigo-400" /> {item}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            );
-
-            const workflowCards = activeTab === 'client' ? (
-                <React.Fragment>
-                    <WorkflowCard
-                        step="01"
-                        icon={<Search size={32} />}
-                        title="SWIPE & MATCH"
-                        desc="Review verified portfolios in a Hinge-style feed. Visual, fast, and filtered by budget."
-                    />
-                    <WorkflowCard
-                        step="02"
-                        icon={<Lock size={32} />}
-                        title="SECURE ESCROW"
-                        desc="Deposit funds into our neutral node. Creator starts work only after deposit is confirmed."
-                    />
-                    <WorkflowCard
-                        step="03"
-                        icon={<CheckCircle size={32} />}
-                        title="AUTO-RELEASE"
-                        desc="Review delivery. One click approval releases funds. 3 free revisions included."
-                    />
-                </React.Fragment>
-            ) : (
-                <React.Fragment>
-                    <WorkflowCard
-                        step="01"
-                        icon={<ShieldCheck size={32} />}
-                        title="VERIFY ID"
-                        desc="Link Aadhaar/PAN. Serious creators only. Get your Verified Badge."
-                    />
-                    <WorkflowCard
-                        step="02"
-                        icon={<Briefcase size={32} />}
-                        title="GET HIRED"
-                        desc="Receive briefs from qualified clients. No free samples. No vague requirements."
-                    />
-                    <WorkflowCard
-                        step="03"
-                        icon={<IndianRupee size={32} />}
-                        title="INSTANT PAYOUT"
-                        desc="Deliver work, client approves, you get paid instantly. No chasing invoices."
-                    />
-                </React.Fragment>
-            );
-
-            const workflowSection = (
-                <div id="workflow" className="py-32 relative bg-black">
-                    <GridPattern />
-                    <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
-                        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
-                            <div>
-                                <h2 className="text-4xl md:text-6xl font-bold text-white mb-4 tracking-tight">HOW IT WORKS</h2>
-                                <p className="text-zinc-500 font-mono">Select your role to initialize protocol.</p>
-                            </div>
-                            <div className="flex border border-white/20 bg-black rounded-xl overflow-hidden">
-                                <button
-                                    onClick={() => setActiveTab('client')}
-                                    className={`px-8 py-3 font-mono text-sm tracking-widest transition-all ${activeTab === 'client' ? 'bg-white text-black font-bold' : 'text-zinc-500 hover:text-white'
-                                        }`}
-                                >
-                                    CLIENT
-                                </button>
-                                <button
-                                    onClick={() => setActiveTab('freelancer')}
-                                    className={`px-8 py-3 font-mono text-sm tracking-widest transition-all ${activeTab === 'freelancer' ? 'bg-white text-black font-bold' : 'text-zinc-500 hover:text-white'
-                                        }`}
-                                >
-                                    CREATOR
-                                </button>
-                            </div>
-                        </div>
-                        <div className="grid md:grid-cols-3 gap-6">{workflowCards}</div>
-                    </div>
-                </div>
-            );
-
-            const pricingSection = (
-                <div id="pricing" className="py-32 border-t border-white/10 relative overflow-hidden">
-                    <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-indigo-900/20 via-black to-black" />
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                        <div className="text-center mb-20">
-                            <h2 className="text-4xl md:text-6xl font-bold text-white mb-6">FAIR PRICING</h2>
-                            <p className="text-zinc-400 max-w-xl mx-auto font-light">We rejected the industry standard of 20% fees. We built a volume model that works for India.</p>
-                        </div>
-
-                        {/* Pricing Cards Array */}
-                        <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-                            <div className="border border-white/10 bg-black p-10 hover:border-zinc-500 transition-colors rounded-xl shadow-xl">
-                                <div className="flex justify-between items-start mb-8">
-                                    <div>
-                                        <h3 className="font-mono text-indigo-400 tracking-widest text-sm mb-2">MICRO_PROJECTS</h3>
-                                        <p className="text-zinc-500 text-sm">Under ₹5,000 Value</p>
-                                    </div>
-                                    <Zap className="text-white" size={24} />
-                                </div>
-                                <div className="flex items-baseline gap-2 mb-8">
-                                    <span className="text-6xl font-bold text-white">₹50</span>
-                                    <span className="text-zinc-500 font-mono">/FLAT</span>
-                                </div>
-                                <ul className="space-y-4 mb-10">
-                                    <li className="flex gap-3 text-zinc-300 text-sm">
-                                        <div className="w-1 h-1 bg-indigo-500 mt-2 rounded-full" />Charged to both parties
-                                    </li>
-                                    <li className="flex gap-3 text-zinc-300 text-sm">
-                                        <div className="w-1 h-1 bg-indigo-500 mt-2 rounded-full" />Ideal for quick Reels/Edits
-                                    </li>
-                                    <li className="flex gap-3 text-zinc-300 text-sm">
-                                        <div className="w-1 h-1 bg-indigo-500 mt-2 rounded-full" />Full Escrow Protection
-                                    </li>
-                                </ul>
-                                <button className="w-full py-4 border border-white/20 text-white font-mono text-sm hover:bg-white hover:text-black transition-all rounded-lg">
-                                    START_MICRO
-                                </button>
-                            </div>
-                            <div className="relative border border-indigo-500/50 bg-indigo-950/10 p-10 rounded-xl shadow-2xl">
-                                <div className="absolute top-0 right-0 bg-indigo-600 text-white text-[10px] font-bold font-mono px-3 py-1 tracking-widest rounded-bl-lg">
-                                    RECOMMENDED
-                                </div>
-                                <div className="flex justify-between items-start mb-8">
-                                    <div>
-                                        <h3 className="font-mono text-indigo-400 tracking-widest text-sm mb-2">PROFESSIONAL</h3>
-                                        <p className="text-zinc-500 text-sm">Above ₹5,000 Value</p>
-                                    </div>
-                                    <Cpu className="text-indigo-400" size={24} />
-                                </div>
-                                <div className="flex items-baseline gap-2 mb-8">
-                                    <span className="text-6xl font-bold text-white">1%</span>
-                                    <span className="text-zinc-500 font-mono">/COMMISSION</span>
-                                </div>
-                                <ul className="space-y-4 mb-10">
-                                    <li className="flex gap-3 text-zinc-300 text-sm">
-                                        <div className="w-1 h-1 bg-indigo-400 mt-2 rounded-full" />Lowest in the industry
-                                    </li>
-                                    <li className="flex gap-3 text-zinc-300 text-sm">
-                                        <div className="w-1 h-1 bg-indigo-400 mt-2 rounded-full" />Full Dispute Resolution
-                                    </li>
-                                    <li className="flex gap-3 text-zinc-300 text-sm">
-                                        <div className="w-1 h-1 bg-indigo-400 mt-2 rounded-full" />Premium Support Access
-                                    </li>
-                                </ul>
-                                <button className="w-full py-4 bg-indigo-600 text-white font-mono text-sm hover:bg-indigo-500 transition-all shadow-[0_0_20px_rgba(79,70,229,0.3)] rounded-lg">
-                                    GO_PROFESSIONAL
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            );
-
-            const manifestoSection = (
-                <div id="manifesto" className="py-32 bg-black text-center px-4 relative">
-                    <div className="absolute inset-0 opacity-20 bg-[linear-gradient(0deg,transparent_24%,rgba(255,255,255,.05)_25%,rgba(255,255,255,.05)_26%,transparent_27%,transparent_74%,rgba(255,255,255,.05)_75%,rgba(255,255,255,.05)_76%,transparent_77%,transparent),linear-gradient(90deg,transparent_24%,rgba(255,255,255,.05)_25%,rgba(255,255,255,.05)_26%,transparent_27%,transparent_74%,rgba(255,255,255,.05)_75%,rgba(255,255,255,.05)_76%,transparent_77%,transparent)] bg-[size:30px_30px]" />
-                    <div className="relative z-10 max-w-4xl mx-auto">
-                        <Globe className="mx-auto text-indigo-500 mb-8 animate-spin-slow" size={48} />
-                        <h2 className="text-sm font-mono text-indigo-400 tracking-[0.3em] mb-8">/// THE_MANIFESTO</h2>
-                        <p className="text-2xl md:text-4xl font-light leading-normal text-white mb-8">
-                            "Artemis is not here to join the market. <br />
-                            We are here to <span className="text-indigo-400 font-bold">redefine</span> it."
-                        </p>
-                        <p className="text-zinc-500 max-w-2xl mx-auto leading-relaxed">We replace chaos with code. Fear with escrow. Guesswork with verification. This is the operating system for India's creative independence.</p>
-                    </div>
-                </div>
-            );
-
-            const footer = (
-                <footer className="border-t border-white/10 bg-black py-12">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
-                        <div className="flex items-center gap-2">
-                            <ArtemisLogo />
-                            <span className="font-mono font-bold text-lg tracking-widest">ARTEMIS_OS</span>
-                        </div>
-                        <div className="flex flex-wrap justify-center gap-6 text-xs font-mono text-zinc-500 tracking-widest">
-                            <a href="#workflow" className="hover:text-white transition-colors">WORKFLOW</a>
-                            <a href="#manifesto" className="hover:text-white transition-colors">MANIFESTO</a>
-                            <a href="#pricing" className="hover:text-white transition-colors">PRICING_TABLE</a>
-                        </div>
-                        <div className="text-zinc-600 text-xs font-mono">
-                            © {new Date().getFullYear()} ARTEMIS TECHNOLOGIES
-                        </div>
-                    </div>
-                </footer>
-            );
-
-            // Conditional rendering for the Waitlist page
-            if (currentPage === 'waitlist') {
-                return <WaitlistPage onBack={() => setCurrentPage('landing')} />;
+                );
             }
 
-            // Main landing page content
             return (
-                <div className="min-h-screen font-sans selection:bg-indigo-500/30 selection:text-indigo-200">
-                    {navbar}
-                    {heroSection}
-                    {problemSection}
-                    {workflowSection}
-                    {pricingSection}
-                    {manifestoSection}
-                    {footer}
+                <div className="min-h-screen relative flex items-center justify-center overflow-hidden">
+                    <FluidBackground />
+                    <div className="glass-card relative z-10 w-full max-w-lg p-1 rounded-2xl shadow-2xl">
+                         <div className="bg-black/80 backdrop-blur-xl rounded-xl p-8 md:p-12">
+                            <button onClick={onBack} className="absolute top-6 left-6 flex items-center text-zinc-500 hover:text-white transition-colors font-mono text-xs tracking-widest z-50">
+                                <ChevronLeft size={14} className="mr-1" /> BACK
+                            </button>
+                            <div className="flex justify-center mb-8 mt-4">
+                                <ArtemisLogo />
+                            </div>
+                            <h2 className="text-3xl md:text-4xl font-bold text-center mb-2 text-white">JOIN THE NETWORK</h2>
+                            <p className="text-center text-indigo-400 font-mono text-xs tracking-[0.2em] mb-10 animate-pulse">/// EARLY_ACCESS_PROTOCOL</p>
+                            
+                            <form onSubmit={handleSubmit} className="space-y-6">
+                                <div>
+                                    <label className="block text-xs font-mono text-zinc-500 mb-2 ml-1">ENTER_EMAIL_ID</label>
+                                    <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="creator@example.com" 
+                                        className="w-full bg-white/5 border border-white/10 p-4 text-white placeholder-zinc-700 focus:outline-none focus:border-indigo-500 focus:bg-white/10 transition-all text-lg rounded-lg" />
+                                </div>
+                                <button type="submit" disabled={status === 'loading'} className="w-full bg-white text-black py-4 font-bold font-mono tracking-widest hover:bg-indigo-600 hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 rounded-lg shadow-lg group">
+                                    {status === 'loading' ? <Loader2 size={16} className="animate-spin" /> : <>REQUEST_ACCESS <Send size={16} className="group-hover:translate-x-1 transition-transform" /></>}
+                                </button>
+                            </form>
+                            {status === 'error' && <p className="mt-4 text-red-500 text-center text-sm font-mono">/// ERROR: CONNECTION_FAILED</p>}
+                        </div>
+                    </div>
                 </div>
             );
         };
 
-        // Render the main App component
+        const App = () => {
+            const [isMenuOpen, setIsMenuOpen] = useState(false);
+            const [activeTab, setActiveTab] = useState('client');
+            const [currentPage, setCurrentPage] = useState('landing');
+
+            if (currentPage === 'waitlist') return <WaitlistPage onBack={() => setCurrentPage('landing')} />;
+
+            return (
+                <div className="min-h-screen relative overflow-x-hidden">
+                    <FluidBackground />
+                    
+                    {/* Navbar */}
+                    <nav className="fixed w-full z-50 bg-black/50 backdrop-blur-xl border-b border-white/5 transition-all duration-300">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div className="flex items-center justify-between h-20">
+                                <div className="flex items-center gap-2 cursor-pointer group" onClick={() => setCurrentPage('landing')}>
+                                    <ArtemisLogo />
+                                    <span className="text-2xl font-bold tracking-wider text-white font-mono group-hover:text-indigo-400 transition-colors">ARTEMIS</span>
+                                </div>
+                                <div className="hidden md:block">
+                                    <div className="ml-10 flex items-baseline space-x-8">
+                                        {['Workflow', 'Manifesto', 'Pricing'].map((item) => (
+                                            <a key={item} href={`#${item.toLowerCase()}`} className="text-xs font-mono text-zinc-400 hover:text-white transition-colors tracking-widest uppercase hover:underline underline-offset-8 decoration-indigo-500">
+                                                {item}
+                                            </a>
+                                        ))}
+                                        <button onClick={() => setCurrentPage('waitlist')} className="bg-white text-black px-6 py-2 text-xs font-bold font-mono tracking-widest hover:bg-indigo-500 hover:text-white transition-all rounded shadow-[0_0_15px_rgba(255,255,255,0.3)] hover:shadow-[0_0_20px_rgba(79,70,229,0.5)]">
+                                            JOIN_WAITLIST
+                                        </button>
+                                    </div>
+                                </div>
+                                <div className="-mr-2 flex md:hidden">
+                                    <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="p-2 text-zinc-400 hover:text-white">{isMenuOpen ? <X size={24} /> : <Menu size={24} />}</button>
+                                </div>
+                            </div>
+                        </div>
+                        {isMenuOpen && (
+                            <div className="md:hidden bg-black/90 backdrop-blur-xl border-b border-white/10">
+                                <div className="px-4 pt-4 pb-6 space-y-2">
+                                    {['Workflow', 'Manifesto', 'Pricing'].map((item) => (
+                                        <a key={item} href={`#${item.toLowerCase()}`} onClick={() => setIsMenuOpen(false)} className="block px-3 py-2 text-base font-mono font-medium text-zinc-300 hover:text-white hover:bg-white/5 rounded-md">{item}</a>
+                                    ))}
+                                    <button onClick={() => { setIsMenuOpen(false); setCurrentPage('waitlist'); }} className="w-full text-left px-3 py-2 text-base font-mono font-medium text-indigo-400 hover:bg-white/5 rounded-md">JOIN_WAITLIST</button>
+                                </div>
+                            </div>
+                        )}
+                    </nav>
+
+                    {/* Hero Section */}
+                    <div className="relative min-h-screen flex items-center justify-center pt-20 px-4">
+                        <div className="relative z-10 max-w-7xl mx-auto text-center">
+                            <Reveal delay={100}>
+                                <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-indigo-300 text-xs font-mono tracking-[0.2em] mb-8 backdrop-blur-md shadow-[0_0_20px_rgba(79,70,229,0.2)]">
+                                    <span className="relative flex h-2 w-2">
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+                                    </span>
+                                    SYSTEM ONLINE
+                                </div>
+                            </Reveal>
+                            
+                            <Reveal delay={200}>
+                                <h1 className="text-5xl md:text-8xl font-black tracking-tighter mb-8 text-white leading-[0.9] text-glow">
+                                    MARKETPLACE <br />
+                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 via-purple-300 to-indigo-300 animate-pulse-glow">OF THE FUTURE</span>
+                                </h1>
+                            </Reveal>
+                            
+                            <Reveal delay={300}>
+                                <p className="mt-6 max-w-2xl mx-auto text-lg md:text-xl text-zinc-400 font-light leading-relaxed">
+                                    India's first <span className="text-white font-medium border-b border-indigo-500">low-fee, zero-logistics</span> creative network. <br/>Matching verified talent with escrow-secured projects.
+                                </p>
+                            </Reveal>
+                            
+                            <Reveal delay={400}>
+                                <div className="mt-12 flex flex-col sm:flex-row justify-center gap-6">
+                                    <button className="px-8 py-4 bg-white text-black font-bold font-mono hover:bg-indigo-500 hover:text-white transition-all duration-300 rounded-lg shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_30px_rgba(79,70,229,0.6)] hover:-translate-y-1">
+                                        FIND_CREATIVE_TALENT
+                                    </button>
+                                    <button onClick={() => setCurrentPage('waitlist')} className="px-8 py-4 glass-card text-white font-bold font-mono hover:bg-white/10 transition-all duration-300 rounded-lg hover:-translate-y-1">
+                                        APPLY_AS_CREATOR
+                                    </button>
+                                </div>
+                            </Reveal>
+
+                            <Reveal delay={600}>
+                                <div className="mt-24 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-5xl mx-auto">
+                                    {[{ icon: <ShieldCheck size={18} />, text: "AADHAAR VERIFIED" }, { icon: <Lock size={18} />, text: "ESCROW SECURED" }, { icon: <Zap size={18} />, text: "INSTANT MATCH" }, { icon: <IndianRupee size={18} />, text: "1% FLAT FEE" }].map((badge, idx) => (
+                                        <div key={idx} className="glass-card p-4 flex items-center justify-center gap-3 text-xs font-mono text-zinc-400 tracking-widest uppercase hover:text-indigo-300 hover:border-indigo-500/50 transition-all rounded-lg">
+                                            {badge.icon} {badge.text}
+                                        </div>
+                                    ))}
+                                </div>
+                            </Reveal>
+                        </div>
+                    </div>
+
+                    {/* Problem Section */}
+                    <div className="py-32 relative">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div className="grid md:grid-cols-2 gap-16">
+                                <Reveal delay={100}>
+                                    <div className="relative group">
+                                        <div className="absolute inset-0 bg-red-500/20 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                                        <div className="glass-card p-10 rounded-2xl relative border-red-500/20 hover:border-red-500/50 transition-colors">
+                                            <h3 className="text-red-500 font-mono text-sm tracking-widest mb-4">/// SYSTEM ERROR: CURRENT_STATE</h3>
+                                            <h2 className="text-3xl font-bold text-white mb-6">The WhatsApp Chaos</h2>
+                                            <ul className="space-y-4">
+                                                {["Ghosting after delivery", "Unsecured UPI payments", "Endless revision loops", "No legal contracts"].map((item, i) => (
+                                                    <li key={i} className="flex items-center gap-3 text-zinc-400 group-hover:text-zinc-200 transition-colors">
+                                                        <X size={16} className="text-red-500" /> {item}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </Reveal>
+                                <Reveal delay={300}>
+                                    <div className="relative group">
+                                        <div className="absolute inset-0 bg-indigo-500/20 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                                        <div className="glass-card p-10 rounded-2xl relative border-indigo-500/20 hover:border-indigo-500/50 transition-colors bg-gradient-to-b from-indigo-900/20 to-transparent">
+                                            <h3 className="text-indigo-400 font-mono text-sm tracking-widest mb-4">/// SYSTEM PATCH: ARTEMIS_V1</h3>
+                                            <h2 className="text-3xl font-bold text-white mb-6">The Structured Future</h2>
+                                            <ul className="space-y-4">
+                                                {["Milestone-based Escrow", "Verified Identity Badges", "Structured 3-Revision Limit", "In-App Workspace"].map((item, i) => (
+                                                    <li key={i} className="flex items-center gap-3 text-white">
+                                                        <CheckCircle size={16} className="text-indigo-400 shadow-[0_0_10px_rgba(129,140,248,0.5)]" /> {item}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </Reveal>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Workflow Section */}
+                    <div id="workflow" className="py-32 relative">
+                        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
+                            <Reveal>
+                                <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+                                    <div>
+                                        <h2 className="text-4xl md:text-6xl font-bold text-white mb-4 tracking-tight">HOW IT WORKS</h2>
+                                        <p className="text-zinc-400 font-mono">Select your role to initialize protocol.</p>
+                                    </div>
+                                    <div className="flex glass-card rounded-lg p-1">
+                                        <button onClick={() => setActiveTab('client')} className={`px-8 py-3 rounded-md font-mono text-xs tracking-widest transition-all ${activeTab === 'client' ? 'bg-white text-black font-bold shadow-lg' : 'text-zinc-500 hover:text-white'}`}>CLIENT</button>
+                                        <button onClick={() => setActiveTab('freelancer')} className={`px-8 py-3 rounded-md font-mono text-xs tracking-widest transition-all ${activeTab === 'freelancer' ? 'bg-white text-black font-bold shadow-lg' : 'text-zinc-500 hover:text-white'}`}>CREATOR</button>
+                                    </div>
+                                </div>
+                            </Reveal>
+                            <div className="grid md:grid-cols-3 gap-6">
+                                {activeTab === 'client' ? (
+                                    <>
+                                        <Reveal delay={100}><WorkflowCard step="01" icon={<Search size={32} />} title="SWIPE & MATCH" desc="Review verified portfolios in a Hinge-style feed. Visual, fast, and filtered by budget." /></Reveal>
+                                        <Reveal delay={200}><WorkflowCard step="02" icon={<Lock size={32} />} title="SECURE ESCROW" desc="Deposit funds into our neutral node. Creator starts work only after deposit is confirmed." /></Reveal>
+                                        <Reveal delay={300}><WorkflowCard step="03" icon={<CheckCircle size={32} />} title="AUTO-RELEASE" desc="Review delivery. One click approval releases funds. 3 free revisions included." /></Reveal>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Reveal delay={100}><WorkflowCard step="01" icon={<ShieldCheck size={32} />} title="VERIFY ID" desc="Link Aadhaar/PAN. Serious creators only. Get your Verified Badge." /></Reveal>
+                                        <Reveal delay={200}><WorkflowCard step="02" icon={<Briefcase size={32} />} title="GET HIRED" desc="Receive briefs from qualified clients. No free samples. No vague requirements." /></Reveal>
+                                        <Reveal delay={300}><WorkflowCard step="03" icon={<IndianRupee size={32} />} title="INSTANT PAYOUT" desc="Deliver work, client approves, you get paid instantly. No chasing invoices." /></Reveal>
+                                    </>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Pricing Section */}
+                    <div id="pricing" className="py-32 border-t border-white/5 relative">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                            <Reveal>
+                                <div className="text-center mb-20">
+                                    <h2 className="text-4xl md:text-6xl font-bold text-white mb-6">FAIR PRICING</h2>
+                                    <p className="text-zinc-400 max-w-xl mx-auto font-light">We rejected the industry standard of 20% fees. We built a volume model that works for India.</p>
+                                </div>
+                            </Reveal>
+                            <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+                                <Reveal delay={100}>
+                                    <div className="glass-card p-10 rounded-2xl hover:bg-white/5 transition-all duration-500 hover:-translate-y-2">
+                                        <div className="flex justify-between items-start mb-8">
+                                            <div><h3 className="font-mono text-indigo-400 tracking-widest text-sm mb-2">MICRO_PROJECTS</h3><p className="text-zinc-500 text-sm">Under ₹5,000 Value</p></div>
+                                            <Zap className="text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]" size={24} />
+                                        </div>
+                                        <div className="flex items-baseline gap-2 mb-8"><span className="text-6xl font-bold text-white">₹50</span><span className="text-zinc-500 font-mono">/FLAT</span></div>
+                                        <ul className="space-y-4 mb-10">
+                                            {['Charged to both parties', 'Ideal for quick Reels/Edits', 'Full Escrow Protection'].map((item, i) => (
+                                                <li key={i} className="flex gap-3 text-zinc-300 text-sm"><div className="w-1.5 h-1.5 bg-indigo-500 mt-2 rounded-full shadow-[0_0_5px_rgba(99,102,241,1)]"></div>{item}</li>
+                                            ))}
+                                        </ul>
+                                        <button className="w-full py-4 border border-white/20 text-white font-mono text-sm hover:bg-white hover:text-black transition-all rounded-lg">START_MICRO</button>
+                                    </div>
+                                </Reveal>
+                                <Reveal delay={300}>
+                                    <div className="glass-card p-10 rounded-2xl relative border-indigo-500/30 hover:border-indigo-500/60 transition-all duration-500 hover:-translate-y-2 bg-gradient-to-b from-indigo-900/10 to-transparent">
+                                        <div className="absolute top-0 right-0 bg-indigo-600 text-white text-[10px] font-bold font-mono px-4 py-1.5 tracking-widest rounded-bl-xl rounded-tr-xl">RECOMMENDED</div>
+                                        <div className="flex justify-between items-start mb-8">
+                                            <div><h3 className="font-mono text-indigo-400 tracking-widest text-sm mb-2">PROFESSIONAL</h3><p className="text-zinc-500 text-sm">Above ₹5,000 Value</p></div>
+                                            <Cpu className="text-indigo-400 drop-shadow-[0_0_10px_rgba(129,140,248,0.8)]" size={24} />
+                                        </div>
+                                        <div className="flex items-baseline gap-2 mb-8"><span className="text-6xl font-bold text-white">1%</span><span className="text-zinc-500 font-mono">/COMMISSION</span></div>
+                                        <ul className="space-y-4 mb-10">
+                                            {['Lowest in the industry', 'Full Dispute Resolution', 'Premium Support Access'].map((item, i) => (
+                                                <li key={i} className="flex gap-3 text-zinc-300 text-sm"><div className="w-1.5 h-1.5 bg-indigo-400 mt-2 rounded-full shadow-[0_0_5px_rgba(129,140,248,1)]"></div>{item}</li>
+                                            ))}
+                                        </ul>
+                                        <button className="w-full py-4 bg-indigo-600 text-white font-mono text-sm hover:bg-indigo-500 transition-all shadow-[0_0_20px_rgba(79,70,229,0.4)] hover:shadow-[0_0_30px_rgba(79,70,229,0.6)] rounded-lg">GO_PROFESSIONAL</button>
+                                    </div>
+                                </Reveal>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Manifesto Section */}
+                    <div id="manifesto" className="py-32 text-center px-4 relative">
+                        <div className="relative z-10 max-w-4xl mx-auto">
+                            <Reveal>
+                                <Globe className="mx-auto text-indigo-500 mb-8 animate-spin-slow drop-shadow-[0_0_15px_rgba(99,102,241,0.5)]" size={48} />
+                                <h2 className="text-xs font-mono text-indigo-400 tracking-[0.3em] mb-8">/// THE_MANIFESTO</h2>
+                                <p className="text-2xl md:text-5xl font-light leading-snug text-white mb-8">
+                                    "Artemis is not here to join the market. <br />
+                                    We are here to <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400 font-bold">redefine</span> it."
+                                </p>
+                                <p className="text-zinc-400 max-w-2xl mx-auto leading-relaxed text-lg">We replace chaos with code. Fear with escrow. Guesswork with verification. This is the operating system for India's creative independence.</p>
+                            </Reveal>
+                        </div>
+                    </div>
+
+                    <footer className="border-t border-white/5 bg-black/60 backdrop-blur-md py-12 relative z-10">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
+                            <div className="flex items-center gap-2">
+                                <ArtemisLogo />
+                                <span className="font-mono font-bold text-lg tracking-widest text-white">ARTEMIS_OS</span>
+                            </div>
+                            <div className="flex flex-wrap justify-center gap-8 text-xs font-mono text-zinc-500 tracking-widest">
+                                {['WORKFLOW', 'MANIFESTO', 'PRICING'].map(item => <a key={item} href={`#${item.toLowerCase()}`} className="hover:text-white transition-colors hover:underline underline-offset-4 decoration-indigo-500">{item}</a>)}
+                            </div>
+                            <div className="text-zinc-600 text-xs font-mono">© {new Date().getFullYear()} ARTEMIS TECHNOLOGIES</div>
+                        </div>
+                    </footer>
+                </div>
+            );
+        };
+
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<App />);
-
     </script>
 </body>
 </html>
